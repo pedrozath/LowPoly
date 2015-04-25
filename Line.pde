@@ -1,17 +1,11 @@
 class Line {
     int p1_id, p2_id;
     boolean hover;
+    ArrayList<Integer> triangles_ids = new ArrayList<Integer>();
 
     Line(int p1_id, int p2_id){
-        Point p1 = points.find(p1_id);
-        Point p2 = points.find(p1_id);
-        if(p1.x < p2.x){
-            this.p1_id = p1_id;
-            this.p2_id = p2_id; 
-        } else {
-            this.p1_id = p2_id;
-            this.p2_id = p1_id;             
-        }
+        this.p1_id = p1_id;
+        this.p2_id = p2_id; 
     }
 
     void hover(){
@@ -20,6 +14,14 @@ class Line {
 
     void no_hover(){
         hover = false;
+    }
+
+    void add_triangle(int t_id){
+        triangles_ids.add(t_id);
+    }
+
+    int triangles_count(){
+        return triangles_ids.size();
     }
 
     void render(){
@@ -49,19 +51,28 @@ class Line {
         return my_points;
     }
 
+    Point[] ordered_points(){
+        if(points()[0].x > points()[1].x){
+            Point[] output = { points()[1], points()[0] };
+            return output;
+        } else {
+            return points();
+        }
+    }
+
     float distance_between(int x, int y){
         Point p = this.closest_point(x,y);
         return sqrt(pow(x-p.x,2)+pow(y-p.y,2));
     }
 
     Point closest_point(int x, int y){
-        Point p1 = this.points()[0];
-        Point p2 = this.points()[1];
+        Point p1 = this.ordered_points()[0];
+        Point p2 = this.ordered_points()[1];
 
         if(x < p1.x){
-            return new Point(p1);
+            return p1;
         } else if(x > p2.x){
-            return new Point(p2);
+            return p2;
         } else {
             float s = (float)(p2.y-p1.y)/(float)(p2.x-p1.x);
             float ps = 1/-s;

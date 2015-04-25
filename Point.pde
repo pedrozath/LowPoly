@@ -1,5 +1,6 @@
 class Point {
     int x, y;
+    Boolean hover = false;
     
     Point(int x, int y){
         this.x = x;
@@ -12,7 +13,9 @@ class Point {
     }
 
     void render(){
-        ellipse(x,y,5,5);
+        int r;
+        if(hover) r = 10; else r = 5;
+        ellipse(x,y,r,r);
     }
 
     void move(int x, int y){

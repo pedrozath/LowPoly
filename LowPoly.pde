@@ -14,7 +14,7 @@ public void draw(){
     background(0);
     triangles.render();
     lines.render();
-    points.render();
+    points.render(mouseX, mouseY);
 }
 
 public void mousePressed(){
@@ -45,6 +45,8 @@ public void mouseReleased(){
 
 public void mouseMoved(){
     ArrayList<Integer> near_lines_ids = lines.near(mouseX, mouseY);
+    ArrayList<Integer> near_points_ids = points.near(mouseX, mouseY);
+
     if (near_lines_ids.size()>0) { 
         state.change("CREATING_TRIANGLE");
     } else {
@@ -65,8 +67,11 @@ public void mouseMoved(){
                 if(this_distance < distance_before) nearest_line_id = the_id;
             }
         }
-
         triangles.start_from_line(nearest_line_id, mouseX, mouseY);        
     }
+
+    // for(int i=0;i<near_points_ids.size();i++){
+    //     Point the_point = points.find(near_points_ids.get(i));
+    // }
 }
 

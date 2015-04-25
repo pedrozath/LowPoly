@@ -2,7 +2,7 @@ class State{
     String state = "IDLE";
     void change(String state){
         this.state = state;
-        println("i am now "+state);
+        // println("i am now "+state);
     }
 
     Boolean is(String state){

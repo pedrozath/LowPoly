@@ -30,7 +30,7 @@ public void draw(){
     background(0);
     triangles.render();
     lines.render();
-    points.render();
+    points.render(mouseX, mouseY);
 }
 
 public void mousePressed(){
@@ -61,6 +61,8 @@ public void mouseReleased(){
 
 public void mouseMoved(){
     ArrayList<Integer> near_lines_ids = lines.near(mouseX, mouseY);
+    ArrayList<Integer> near_points_ids = points.near(mouseX, mouseY);
+
     if (near_lines_ids.size()>0) { 
         state.change("CREATING_TRIANGLE");
     } else {
@@ -81,25 +83,22 @@ public void mouseMoved(){
                 if(this_distance < distance_before) nearest_line_id = the_id;
             }
         }
-
         triangles.start_from_line(nearest_line_id, mouseX, mouseY);        
     }
+
+    // for(int i=0;i<near_points_ids.size();i++){
+    //     Point the_point = points.find(near_points_ids.get(i));
+    // }
 }
 
 class Line {
     int p1_id, p2_id;
     boolean hover;
+    ArrayList<Integer> triangles_ids = new ArrayList<Integer>();
 
     Line(int p1_id, int p2_id){
-        Point p1 = points.find(p1_id);
-        Point p2 = points.find(p1_id);
-        if(p1.x < p2.x){
-            this.p1_id = p1_id;
-            this.p2_id = p2_id; 
-        } else {
-            this.p1_id = p2_id;
-            this.p2_id = p1_id;             
-        }
+        this.p1_id = p1_id;
+        this.p2_id = p2_id; 
     }
 
     public void hover(){
@@ -108,6 +107,14 @@ class Line {
 
     public void no_hover(){
         hover = false;
+    }
+
+    public void add_triangle(int t_id){
+        triangles_ids.add(t_id);
+    }
+
+    public int triangles_count(){
+        return triangles_ids.size();
     }
 
     public void render(){
@@ -137,19 +144,28 @@ class Line {
         return my_points;
     }
 
+    public Point[] ordered_points(){
+        if(points()[0].x > points()[1].x){
+            Point[] output = { points()[1], points()[0] };
+            return output;
+        } else {
+            return points();
+        }
+    }
+
     public float distance_between(int x, int y){
         Point p = this.closest_point(x,y);
         return sqrt(pow(x-p.x,2)+pow(y-p.y,2));
     }
 
     public Point closest_point(int x, int y){
-        Point p1 = this.points()[0];
-        Point p2 = this.points()[1];
+        Point p1 = this.ordered_points()[0];
+        Point p2 = this.ordered_points()[1];
 
         if(x < p1.x){
-            return new Point(p1);
+            return p1;
         } else if(x > p2.x){
-            return new Point(p2);
+            return p2;
         } else {
             float s = (float)(p2.y-p1.y)/(float)(p2.x-p1.x);
             float ps = 1/-s;
@@ -161,6 +177,7 @@ class Line {
 }
 class LineSet {
     ArrayList<Line> lines = new ArrayList<Line>();
+
     int editing_line_id;
 
     public void start_line(int x, int y){
@@ -170,8 +187,9 @@ class LineSet {
         editing_line_id = lines.size()-1;
     }
 
-    public void add(int p1_id, int p2_id){
+    public int add(int p1_id, int p2_id){
         lines.add(new Line(p1_id, p2_id));
+        return lines.size()-1;
     }
 
     public void drag_line(int x, int y){
@@ -202,7 +220,8 @@ class LineSet {
         ArrayList<Integer> found_lines_ids = new ArrayList<Integer>();
         found_lines_ids = new ArrayList<Integer>();
         for(int i=0;i<lines.size();i++){
-            if(lines.get(i).is_near(x,y)) found_lines_ids.add(i);
+            Line the_line = lines.get(i);
+            if(the_line.is_near(x,y) && the_line.triangles_count() < 2) found_lines_ids.add(i);
         }
 
         return found_lines_ids;
@@ -210,6 +229,7 @@ class LineSet {
 }
 class Point {
     int x, y;
+    Boolean hover = false;
     
     Point(int x, int y){
         this.x = x;
@@ -222,7 +242,9 @@ class Point {
     }
 
     public void render(){
-        ellipse(x,y,5,5);
+        int r;
+        if(hover) r = 10; else r = 5;
+        ellipse(x,y,r,r);
     }
 
     public void move(int x, int y){
@@ -251,7 +273,7 @@ class PointSet {
         return points.size()-1;
     }
 
-    public void render() {
+    public void render(int mouseX, int mouseY) {
         for(int i=0;i<points.size();i++){
             Point my_point = points.get(i);
             if(my_point != null) points.get(i).render();
@@ -265,12 +287,22 @@ class PointSet {
     public void destroy(int id){
         points.set(id, null);
     }
+
+    public ArrayList<Integer> near(int x, int y){
+        ArrayList<Integer> found_ids = new ArrayList<Integer>();
+        for(int i=0;i<points.size();i++){
+            Point p = points.get(i);
+            if(p == null) continue;
+            if(sqrt(pow(p.x-x,2)+pow(p.y-y,2)) < 20) found_ids.add(i);
+        }
+        return found_ids;
+    }
 }
 class State{
     String state = "IDLE";
     public void change(String state){
         this.state = state;
-        println("i am now "+state);
+        // println("i am now "+state);
     }
 
     public Boolean is(String state){
@@ -320,6 +352,7 @@ class Triangle {
 class TriangleSet {
     ArrayList<Triangle> triangles = new ArrayList<Triangle>();
     int editing_triangle_id = -1;
+    int starter_line_id = -1;
 
     public void drag_triangle(int x, int y){
         triangles.get(editing_triangle_id).drag_triangle(x,y);
@@ -330,6 +363,7 @@ class TriangleSet {
         int p3_id = points.add(l.closest_point(x,y));
         triangles.add(new Triangle(l.p1_id, l.p2_id, p3_id));
         editing_triangle_id = triangles.size()-1;
+        starter_line_id = line_id;
     }
 
     public void cancel_triangle(){
@@ -343,9 +377,13 @@ class TriangleSet {
     public void end_triangle(){
         if(editing_triangle_id > -1){
             Triangle t = triangles.get(editing_triangle_id);
-            lines.add(t.p2_id, t.p3_id);
-            lines.add(t.p3_id, t.p1_id);
+            int l1_id = lines.add(t.p2_id, t.p3_id);
+            int l2_id = lines.add(t.p3_id, t.p1_id);
+            lines.find(starter_line_id).add_triangle(editing_triangle_id);
+            lines.find(l1_id).add_triangle(editing_triangle_id);
+            lines.find(l2_id).add_triangle(editing_triangle_id);
             editing_triangle_id = -1;
+            starter_line_id = -1;
         }
     }
 
