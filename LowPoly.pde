@@ -11,13 +11,10 @@ public void setup(){
 }
 
 public void draw(){
-    render();
-}
-
-public void render(){
     background(0);
-    points.render();
+    triangles.render();
     lines.render();
+    points.render();
 }
 
 public void mousePressed(){
@@ -35,8 +32,14 @@ public void mouseDragged(){
 
 public void mouseReleased(){
     if(state.is("CREATING_LINE")){ 
-      lines.end_line();
-      state.change("IDLE");
+        lines.end_line();
+    }
+    if(state.is("CREATING_TRIANGLE")){
+        triangles.end_triangle();
+    }
+    
+    if(state.wasnt("IDLE")){
+        state.change("IDLE");
     }
 }
 
@@ -47,9 +50,23 @@ public void mouseMoved(){
     } else {
         state.change("IDLE");
     }
-    for(int i=0;i<near_lines_ids.size();i++){
-        // lines.find(near_lines_ids.get(i)).start_triangle();
-        break;
+
+    triangles.cancel_triangle();
+
+    if(near_lines_ids.size() > 0){
+        int nearest_line_id = near_lines_ids.get(0);
+        for(int i=0;i<near_lines_ids.size();i++){
+            int the_id = near_lines_ids.get(i);
+            Line the_line = lines.find(the_id);
+            if(i>0){
+                Line previous_line = lines.find(near_lines_ids.get(i-1));
+                float this_distance = the_line.distance_between(mouseX, mouseY);
+                float distance_before = previous_line.distance_between(mouseX, mouseY);
+                if(this_distance < distance_before) nearest_line_id = the_id;
+            }
+        }
+
+        triangles.start_from_line(nearest_line_id, mouseX, mouseY);        
     }
 }
 

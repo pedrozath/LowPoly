@@ -3,8 +3,15 @@ class Line {
     boolean hover;
 
     Line(int p1_id, int p2_id){
-        this.p1_id = p1_id;
-        this.p2_id = p2_id;
+        Point p1 = points.find(p1_id);
+        Point p2 = points.find(p1_id);
+        if(p1.x < p2.x){
+            this.p1_id = p1_id;
+            this.p2_id = p2_id; 
+        } else {
+            this.p1_id = p2_id;
+            this.p2_id = p1_id;             
+        }
     }
 
     void hover(){
@@ -32,6 +39,8 @@ class Line {
     }
 
     Boolean is_near(int x, int y){
+        Boolean inside_horizontal_range = x > points()[0].x && x < points()[1].x;
+        Boolean inside_vertical_range = y > points()[0].y && y < points()[1].y;
         return this.distance_between(x, y) < 20;
     }
 
@@ -48,10 +57,17 @@ class Line {
     Point closest_point(int x, int y){
         Point p1 = this.points()[0];
         Point p2 = this.points()[1];
-        float s = (float)(p2.y-p1.y)/(float)(p2.x-p1.x);
-        float ps = 1/-s;
-        float cx = (p1.x*s-p1.y-x*ps+y)/(s-ps);
-        float cy = (float)s*(cx-p1.x) + p1.y;
-        return new Point(round(cx), round(cy));
+
+        if(x < p1.x){
+            return new Point(p1);
+        } else if(x > p2.x){
+            return new Point(p2);
+        } else {
+            float s = (float)(p2.y-p1.y)/(float)(p2.x-p1.x);
+            float ps = 1/-s;
+            float cx = (p1.x*s-p1.y-x*ps+y)/(s-ps);
+            float cy = (float)s*(cx-p1.x) + p1.y;
+            return new Point(round(cx), round(cy));
+        }
     }
 }
