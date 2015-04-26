@@ -30,7 +30,7 @@ public void draw(){
     background(0);
     triangles.render();
     lines.render();
-    points.render(mouseX, mouseY);
+    points.render();
 }
 
 public void mousePressed(){
@@ -86,9 +86,9 @@ public void mouseMoved(){
         triangles.start_from_line(nearest_line_id, mouseX, mouseY);        
     }
 
-    // for(int i=0;i<near_points_ids.size();i++){
-    //     Point the_point = points.find(near_points_ids.get(i));
-    // }
+    for(int i=0;i<near_points_ids.size();i++){
+        Point the_point = points.find(near_points_ids.get(i));
+    }
 }
 
 class Line {
@@ -241,9 +241,22 @@ class Point {
         this.y = p.y;
     }
 
+    public Boolean near(int x, int y){
+        return sqrt(pow(this.x-x,2)+pow(this.y-y,2)) < 20;
+    }
+
+    public void hover(){
+        hover = true;
+    }
+
     public void render(){
         int r;
-        if(hover) r = 10; else r = 5;
+        if(hover){
+            r = 10;
+            hover = false;
+        } else {
+            r = 5;
+        }
         ellipse(x,y,r,r);
     }
 
@@ -273,10 +286,14 @@ class PointSet {
         return points.size()-1;
     }
 
-    public void render(int mouseX, int mouseY) {
+    public void render() {
+
         for(int i=0;i<points.size();i++){
             Point my_point = points.get(i);
-            if(my_point != null) points.get(i).render();
+            if(my_point != null) { 
+                if(my_point.near(mouseX, mouseY)) my_point.hover();
+                my_point.render();
+            }
         }
     }
 

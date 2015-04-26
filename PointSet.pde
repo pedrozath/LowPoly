@@ -11,10 +11,14 @@ class PointSet {
         return points.size()-1;
     }
 
-    void render(int mouseX, int mouseY) {
+    void render() {
+
         for(int i=0;i<points.size();i++){
             Point my_point = points.get(i);
-            if(my_point != null) points.get(i).render();
+            if(my_point != null) { 
+                if(my_point.near(mouseX, mouseY)) my_point.hover();
+                my_point.render();
+            }
         }
     }
 

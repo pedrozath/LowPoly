@@ -14,7 +14,7 @@ public void draw(){
     background(0);
     triangles.render();
     lines.render();
-    points.render(mouseX, mouseY);
+    points.render();
 }
 
 public void mousePressed(){
@@ -70,8 +70,8 @@ public void mouseMoved(){
         triangles.start_from_line(nearest_line_id, mouseX, mouseY);        
     }
 
-    // for(int i=0;i<near_points_ids.size();i++){
-    //     Point the_point = points.find(near_points_ids.get(i));
-    // }
+    for(int i=0;i<near_points_ids.size();i++){
+        Point the_point = points.find(near_points_ids.get(i));
+    }
 }
 

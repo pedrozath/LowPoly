@@ -12,9 +12,22 @@ class Point {
         this.y = p.y;
     }
 
+    Boolean near(int x, int y){
+        return sqrt(pow(this.x-x,2)+pow(this.y-y,2)) < 20;
+    }
+
+    void hover(){
+        hover = true;
+    }
+
     void render(){
         int r;
-        if(hover) r = 10; else r = 5;
+        if(hover){
+            r = 10;
+            hover = false;
+        } else {
+            r = 5;
+        }
         ellipse(x,y,r,r);
     }
 
