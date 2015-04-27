@@ -3,11 +3,15 @@ class TriangleSet {
     int editing_triangle_id = -1;
     int starter_line_id = -1;
 
-    void drag_triangle(int x, int y){
-        if(editing_triangle_id > -1) triangles.get(editing_triangle_id).drag_triangle(x,y);
+    public Triangle find(int id){
+        return triangles.get(id);
     }
 
-    void update_point_id(int old_point_id, int new_point_id){
+    public void drag_triangle(int x, int y){
+        if(editing_triangle_id > -1) triangles.get(editing_triangle_id).drag(x,y);
+    }
+
+    public void update_point_id(int old_point_id, int new_point_id){
         for(int i=0;i<triangles.size();i++){
             Triangle t = triangles.get(i);
             if(t.p1_id == old_point_id) triangles.get(i).p1_id = new_point_id;
@@ -16,18 +20,18 @@ class TriangleSet {
         }
     }
 
-    void start_from_line(int line_id, int x, int y){
+    public void start_from_line(int line_id, int x, int y){
         Line l = lines.find(line_id);
         int p3_id = points.add(l.closest_point(x,y));
         // points.start_moving(p3_id);
         // points.move(x, y);
         // points.stop_moving();
-        triangles.add(new Triangle(l.p1_id, l.p2_id, p3_id));
+        triangles.add(new Triangle(l.p1_id, l.p2_id, p3_id, triangles.size()));
         editing_triangle_id = triangles.size()-1;
         starter_line_id = line_id;
     }
 
-    void cancel_triangle(){
+    public void cancel_triangle(){
         if(editing_triangle_id > -1){
             points.destroy(triangles.get(editing_triangle_id).p3_id);
             triangles.set(editing_triangle_id, null);
@@ -35,7 +39,7 @@ class TriangleSet {
         }
     }
 
-    void end_triangle(){
+    public void end_triangle(){
         if(editing_triangle_id > -1){
             Triangle t = triangles.get(editing_triangle_id);
             int l1_id = lines.add(t.p2_id, t.p3_id);
@@ -48,7 +52,20 @@ class TriangleSet {
         }
     }
 
-    void render(){
+    IntList at(int x, int y){
+        IntList found_triangles = new IntList();
+        for(int i=0;i<triangles.size();i++){
+            Triangle t = triangles.get(i);
+            if(t != null){
+                if(t.test_collision(x,y)){
+                    found_triangles.append(i);
+                }
+            }
+        }
+        return found_triangles;
+    }
+
+    public void render(){
         for(int i=0;i<triangles.size();i++){
             Triangle my_triangle = triangles.get(i);
             if(my_triangle != null) triangles.get(i).render();
