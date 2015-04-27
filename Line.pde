@@ -1,11 +1,12 @@
 class Line {
-    int p1_id, p2_id;
+    int p1_id, p2_id, id;
     boolean hover;
-    ArrayList<Integer> triangles_ids = new ArrayList<Integer>();
+    IntList triangles_ids = new IntList();
 
-    Line(int p1_id, int p2_id){
+    Line(int p1_id, int p2_id, int id){
         this.p1_id = p1_id;
-        this.p2_id = p2_id; 
+        this.p2_id = p2_id;
+        this.id = id;
     }
 
     void hover(){
@@ -17,7 +18,7 @@ class Line {
     }
 
     void add_triangle(int t_id){
-        triangles_ids.add(t_id);
+        triangles_ids.append(t_id);
     }
 
     int triangles_count(){
@@ -68,7 +69,6 @@ class Line {
     Point closest_point(int x, int y){
         Point p1 = this.ordered_points()[0];
         Point p2 = this.ordered_points()[1];
-
         if(x < p1.x){
             return p1;
         } else if(x > p2.x){

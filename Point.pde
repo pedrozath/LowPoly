@@ -1,7 +1,13 @@
 class Point {
-    int x, y;
+    int x, y, id;
     Boolean hover = false;
     
+    Point(int x, int y, int id){
+        this.x = x;
+        this.y = y;
+        this.id = id;
+    }
+
     Point(int x, int y){
         this.x = x;
         this.y = y;
@@ -10,6 +16,12 @@ class Point {
     Point(Point p){
         this.x = p.x;
         this.y = p.y;
+    }
+
+    Point(Point p, int id){
+        this.x = p.x;
+        this.y = p.y;
+        this.id = id;
     }
 
     Boolean near(int x, int y){
@@ -34,6 +46,10 @@ class Point {
     void move(int x, int y){
         this.x = x;
         this.y = y;
+    }
+
+    void move(Point p){
+        this.move(p.x,p.y);
     }
 
     void trace(){
