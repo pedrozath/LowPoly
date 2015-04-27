@@ -1,6 +1,7 @@
 TODO
 
 + merging points
-+ load image in the background
-+ make the triangle get the color median
-+ triangle collision detection formula
++ magnifying function
++ pan function
++ hide lines function
++ change all ints to floats
