@@ -2,18 +2,21 @@ LineSet lines         = new LineSet();
 PointSet points       = new PointSet();
 TriangleSet triangles = new TriangleSet();
 State state           = new State();
+CameraControl viewport;
 Template template;
 
 public void setup(){
-    background(0);
+    viewport = new CameraControl();
     colorMode(RGB,255,255,255,100);
-    size(1024,768);
+    size(1024,768,OPENGL);
     template = new Template();
-    smooth();
+    smooth(4);
     frameRate(120);
 }
 
 public void draw(){
+    background(0);
+    viewport.apply();
     template.render();
     triangles.render();
     lines.render();
@@ -27,7 +30,18 @@ public void mousePressed(){
     }
 }
 
+public void keyPressed(){
+    if(keyCode == 32 /* SPACEBAR */){
+        state.change("MOVING_VIEWPORT");
+    };
+}
+
+public void mouseWheel(MouseEvent e){
+    viewport.zoom(e.getCount());
+}
+
 public void mouseDragged(){
+    if(state.is("MOVING_VIEWPORT")) viewport.move(pmouseX, pmouseY);
     if(state.is("CREATING_LINE")) lines.drag_line(mouseX, mouseY);
     if(state.is("CREATING_TRIANGLE")) triangles.drag_triangle(mouseX, mouseY);
     if(state.is("MOVING_A_POINT")) points.move(mouseX, mouseY);

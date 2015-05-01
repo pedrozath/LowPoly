@@ -14,6 +14,7 @@ class Template{
     // }
 
     void render(){
+        background(0);
         image(img, 0, 0);
     }
 
