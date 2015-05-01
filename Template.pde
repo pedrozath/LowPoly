@@ -3,7 +3,7 @@ class Template{
     int[] pixels;
 
     Template(){
-        img = loadImage("../../sample.jpg");
+        img = loadImage("c:\\users\\demais\\documents\\lowpoly\\sample.jpg");
         img.loadPixels();
         pixels = img.pixels;
     }

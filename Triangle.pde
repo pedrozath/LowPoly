@@ -2,7 +2,7 @@ class Triangle {
     int p1_id, p2_id, p3_id;
     int l1_id, l2_id, l3_id;
     int id;
-    int color;
+    int fill_color;
 
     Triangle(int p1_id, int p2_id, int p3_id, int id){
         this.p1_id = p1_id;
@@ -66,7 +66,7 @@ class Triangle {
                 }
             }
         }
-        this.color = color(r/total, g/total, b/total);
+        this.fill_color = color(r/total, g/total, b/total);
     }
 
     public Boolean test_collision(int x,int y){
@@ -89,7 +89,7 @@ class Triangle {
     public void render(){
         pushStyle();
         noStroke();
-        fill(this.color);
+        fill(this.fill_color);
         beginShape();
         vertex(points()[0].x, points()[0].y);
         vertex(points()[1].x, points()[1].y);

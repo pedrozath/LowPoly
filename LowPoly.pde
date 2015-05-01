@@ -41,7 +41,7 @@ public void mouseReleased(){
 }
 
 public void mouseMoved(){
-    IntList near_lines_ids = lines.near(mouseX, mouseY, 5);
+    IntList near_lines_ids = lines.near(mouseX, mouseY, 20);
     IntList near_points_ids = points.near(mouseX, mouseY, 2);
     IntList near_triangles_ids = triangles.at(mouseX, mouseY);
 
@@ -52,7 +52,7 @@ public void mouseMoved(){
         points.start_moving(near_points_ids.get(0));
     } else if(near_lines_ids.size()>0) {         
         state.change("CREATING_TRIANGLE");
-        triangles.start_from_line(lines.nearest(mouseX, mouseY, 5), mouseX, mouseY);
+        triangles.start_from_line(lines.nearest(mouseX, mouseY, 20), mouseX, mouseY);
     } else if(near_triangles_ids.size()>0){
         state.change("MOVING_A_TRIANGLE");
     } else {
