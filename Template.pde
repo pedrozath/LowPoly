@@ -3,10 +3,15 @@ class Template{
     int[] pixels;
 
     Template(){
-        img = loadImage("c:\\users\\demais\\documents\\lowpoly\\sample.jpg");
+        // selectInput("Selecione uma imagem", "load_image", this);
+        // img = loadImage(image_file.getAbsolutePath());
+        img = loadImage("/sample.jpg");
         img.loadPixels();
         pixels = img.pixels;
     }
+
+    // void load_image(File image_file){
+    // }
 
     void render(){
         image(img, 0, 0);
