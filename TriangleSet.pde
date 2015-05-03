@@ -3,11 +3,19 @@ class TriangleSet {
     int editing_triangle_id = -1;
     int starter_line_id = -1;
 
+    TriangleSet(){
+
+    }
+
+    TriangleSet(Object triangleset){
+        this.triangles = new ArrayList<Triangle>(((TriangleSet)triangleset).triangles);
+    }
+
     public Triangle find(int id){
         return triangles.get(id);
     }
 
-    public void drag_triangle(int x, int y){
+    public void drag_triangle(float x, float y){
         if(editing_triangle_id > -1) triangles.get(editing_triangle_id).drag(x,y);
     }
 
@@ -20,7 +28,7 @@ class TriangleSet {
         }
     }
 
-    public void start_from_line(int line_id, int x, int y){
+    public void start_from_line(int line_id, float x, float y){
         Line l = lines.find(line_id);
         int p3_id = points.add(l.closest_point(x,y));
         // points.start_moving(p3_id);
@@ -52,7 +60,7 @@ class TriangleSet {
         }
     }
 
-    IntList at(int x, int y){
+    IntList at(float x, float y){
         IntList found_triangles = new IntList();
         for(int i=0;i<triangles.size();i++){
             Triangle t = triangles.get(i);

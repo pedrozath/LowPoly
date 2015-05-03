@@ -14,7 +14,7 @@ class Triangle {
         }
     }
 
-    public void drag(int x, int y){
+    public void drag(float x, float y){
         this.points()[2].x = x;
         this.points()[2].y = y;
         this.update_color();
@@ -22,10 +22,10 @@ class Triangle {
 
     PVector[] area(){
         Point[] p = this.points();
-        int min_x = p[0].x;
-        int min_y = p[0].y;
-        int max_x = p[0].x;
-        int max_y = p[0].y;
+        float min_x = p[0].x;
+        float min_y = p[0].y;
+        float max_x = p[0].x;
+        float max_y = p[0].y;
 
         for(int i=1;i<p.length;i++){
             if(p[i].x < min_x) min_x = p[i].x; 
@@ -69,7 +69,7 @@ class Triangle {
         this.fill_color = color(r/total, g/total, b/total);
     }
 
-    public Boolean test_collision(int x,int y){
+    public Boolean test_collision(float x, float y){
         Float[] bc = this.to_baricentric(x,y);
         Boolean l1 = bc[0] >= 0 && bc[0] <= 1;
         Boolean l2 = bc[1] >= 0 && bc[1] <= 1;
@@ -77,7 +77,7 @@ class Triangle {
         return l1 && l2 && l3;
     }
 
-    public Float[] to_baricentric(int x, int y){
+    public Float[] to_baricentric(float x, float y){
         Point[] p = this.points();
         float l_1 = (float)(p[1].x*(-y)+p[1].x*p[2].y+p[2].x*y+x*p[1].y-p[2].x*p[1].y-x*p[2].y)/(-p[1].x*p[0].y+p[2].x*p[0].y+p[0].x*p[1].y-p[2].x*p[1].y-p[0].x*p[2].y+p[1].x*p[2].y);
         float l_2 = (float)(-l_1*p[0].x+l_1*p[2].x+x-p[2].x)/(p[1].x-p[2].x);

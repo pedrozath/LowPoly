@@ -1,15 +1,15 @@
 class Point {
-    int x, y, id;
+    float x, y, id;
     IntList triangles_ids = new IntList();
     Boolean hover = false;
     
-    Point(int x, int y, int id){
+    Point(float x, float y, int id){
         this.x = x;
         this.y = y;
         this.id = id;
     }
 
-    Point(int x, int y){
+    Point(float x, float y){
         this.x = x;
         this.y = y;
     }
@@ -25,7 +25,7 @@ class Point {
         this.id = id;
     }
 
-    public Boolean near(int x, int y, int distance){
+    public Boolean near(float x, float y, int distance){
         return sqrt(pow(this.x-x,2)+pow(this.y-y,2)) < distance;
     }
 
@@ -52,7 +52,7 @@ class Point {
         popStyle();
     }
 
-    public void move(int x, int y){
+    public void move(float x, float y){
         this.x = x;
         this.y = y;
         for(int i=0;i<triangles_ids.size();i++){

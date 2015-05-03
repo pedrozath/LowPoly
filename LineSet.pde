@@ -2,11 +2,23 @@ class LineSet {
     ArrayList<Line> lines = new ArrayList<Line>();
     int editing_line_id = -1;
 
-    public void start_line(int x, int y){
+    LineSet(){
+
+    }
+
+    LineSet(Object lineset){
+        this.lines = new ArrayList<Line>(((LineSet)lineset).lines);
+    }
+
+    public void start_line(float x, float y){
         int p1_id = points.add(x,y);
         int p2_id = points.add(x,y);
         lines.add(new Line(p1_id, p2_id, lines.size()));
         editing_line_id = lines.size()-1;
+    }
+
+    public void start_line(PVector p){
+        start_line(p.x, p.y);
     }
 
     public void update_point_id(int old_point_id, int new_point_id){
@@ -22,8 +34,12 @@ class LineSet {
         return lines.size()-1;
     }
 
-    public void drag_line(int x, int y){
+    public void drag_line(float x, float y){
         lines.get(editing_line_id).drag(x, y);
+    }
+
+    public void drag_line(PVector p){
+        drag_line(p.x, p.y);
     }
 
     public void end_line(){
@@ -46,7 +62,7 @@ class LineSet {
         }
     }
 
-    public IntList near(int x, int y, int distance){
+    public IntList near(float x, float y, float distance){
         IntList found_lines_ids = new IntList();
         found_lines_ids = new IntList();
         for(int i=0;i<lines.size();i++){
@@ -57,7 +73,7 @@ class LineSet {
         return found_lines_ids;
     }
 
-    public int nearest(int x, int y, int distance){
+    public int nearest(float x, float y, float distance){
         IntList near_lines_ids = this.near(x,y,distance);
         int nearest_line_id = -1;
         for(int i=0;i<near_lines_ids.size();i++){

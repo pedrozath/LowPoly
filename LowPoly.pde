@@ -1,9 +1,13 @@
+import java.util.*;
+
 LineSet lines         = new LineSet();
 PointSet points       = new PointSet();
 TriangleSet triangles = new TriangleSet();
 State state           = new State();
 CameraControl viewport;
 Template template;
+Keys keys = new Keys();
+History history = new History();
 
 public void setup(){
     viewport = new CameraControl();
@@ -23,28 +27,38 @@ public void draw(){
     points.render();
 }
 
-public void mousePressed(){
-    if(state.is("IDLE")){
-        lines.start_line(mouseX, mouseY);
-        state.change("CREATING_LINE");
-    }
-}
 
 public void keyPressed(){
-    if(keyCode == 32 /* SPACEBAR */){
-        state.change("MOVING_VIEWPORT");
-    };
+    keys.add(keyCode);
+    if(keys.are_pressed("command", "z")) history.undo();
+}
+
+public void keyReleased(){
+    println(keyCode);
+    keys.remove(keyCode);
+    println(keys.to_string());
 }
 
 public void mouseWheel(MouseEvent e){
     viewport.zoom(e.getCount());
 }
 
+public void mousePressed(){
+    if(state.is("IDLE")){
+        lines.start_line(viewport.mouse());
+        state.change("CREATING_LINE");
+    }
+}
+
 public void mouseDragged(){
-    if(state.is("MOVING_VIEWPORT")) viewport.move(pmouseX, pmouseY);
-    if(state.is("CREATING_LINE")) lines.drag_line(mouseX, mouseY);
-    if(state.is("CREATING_TRIANGLE")) triangles.drag_triangle(mouseX, mouseY);
-    if(state.is("MOVING_A_POINT")) points.move(mouseX, mouseY);
+    float mx = viewport.mouse().x;
+    float my = viewport.mouse().y;
+    if(keys.are_pressed("spacebar")) state.change("MOVING_VIEWPORT");
+    if(state.is("MOVING_VIEWPORT")) viewport.move(pmouseX-mouseX, pmouseY-mouseY);
+    if(state.is("ZOOMING_VIEWPORT")) viewport.zoom(pmouseY-mouseY);
+    if(state.is("CREATING_LINE")) lines.drag_line(viewport.mouse());
+    if(state.is("CREATING_TRIANGLE")) triangles.drag_triangle(mx, my);
+    if(state.is("MOVING_A_POINT")) points.move(mx, my);
 }
 
 public void mouseReleased(){
@@ -52,12 +66,15 @@ public void mouseReleased(){
     if(state.is("CREATING_TRIANGLE")) triangles.end_triangle();
     if(state.is("MOVING_A_POINT")) points.stop_moving();
     if(state.isnt("IDLE")) state.change("IDLE");
+    history.save();
 }
 
 public void mouseMoved(){
-    IntList near_lines_ids = lines.near(mouseX, mouseY, 20);
-    IntList near_points_ids = points.near(mouseX, mouseY, 2);
-    IntList near_triangles_ids = triangles.at(mouseX, mouseY);
+    float mx = viewport.mouse().x;
+    float my = viewport.mouse().y;
+    IntList near_lines_ids = lines.near(mx, my, 20/viewport.zoom);
+    IntList near_points_ids = points.near(mx, my, 2/viewport.zoom);
+    IntList near_triangles_ids = triangles.at(mx, my);
 
     triangles.cancel_triangle();
 
@@ -66,7 +83,7 @@ public void mouseMoved(){
         points.start_moving(near_points_ids.get(0));
     } else if(near_lines_ids.size()>0) {         
         state.change("CREATING_TRIANGLE");
-        triangles.start_from_line(lines.nearest(mouseX, mouseY, 20), mouseX, mouseY);
+        triangles.start_from_line(lines.nearest(mx, my, 20/viewport.zoom), mx, my);
     } else if(near_triangles_ids.size()>0){
         state.change("MOVING_A_TRIANGLE");
     } else {

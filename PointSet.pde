@@ -2,7 +2,15 @@ class PointSet {
     ArrayList<Point> points = new ArrayList<Point>();
     int moving_point_id;
 
-    public int add(int x,int y) {
+    PointSet(){
+
+    }
+
+    PointSet(Object pointset){
+        this.points = new ArrayList<Point>(((PointSet)pointset).points);
+    }
+
+    public int add(float x, float y) {
         points.add(new Point(x,y));
         return points.size()-1;
     }
@@ -20,7 +28,7 @@ class PointSet {
         moving_point_id = point_id;
     }
 
-    public void move(int x,int y){
+    public void move(float x, float y){
         if(moving_point_id > -1) {
             Point moving_point = points.get(moving_point_id);
         //     if(this.any_near_except(x,y,moving_point_id)){
@@ -31,17 +39,17 @@ class PointSet {
         }
     }
 
-    // public Boolean any_near_except(int x, int y, int p){
+    // public Boolean any_near_except(float x, float y, int p){
     //     return this.near_except(x,y,p).size() > 0;
     // }
 
-    // public IntList near_except(int x, int y, int p_id){
+    // public IntList near_except(float x, float y, int p_id){
     //     IntList found_ids = this.near(x,y);
     //     // found_ids.remove(p_id);
     //     return found_ids;
     // }
 
-    // public int nearest_except(int x, int y, int p_id){
+    // public int nearest_except(float x, float y, int p_id){
     //     return nearest_except(x,y,p_id);
     // }
 
@@ -79,7 +87,7 @@ class PointSet {
         points.set(id, null);
     }
 
-    public IntList near(int x, int y, int distance){
+    public IntList near(float x, float y, float distance){
         IntList found_ids = new IntList();
         for(int i=0;i<points.size();i++){
             Point p = points.get(i);
@@ -90,7 +98,7 @@ class PointSet {
         return found_ids;
     }
 
-    public int nearest(int x, int y, int distance){
+    public int nearest(float x, float y, float distance){
         return this.near(x,y,distance).get(0);
     }
 
